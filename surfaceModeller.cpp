@@ -1,13 +1,7 @@
-#define GL_SILENCE_DEPRECATION
-#ifdef __APPLE__
-#include <glut/glut.h>
-#else
-#include <windows.h>
-#include <gl/glut.h>
-#endif
 #include <stdio.h>
-//#include <GL/glew.h>
-//#include <GL/freeglut.h>
+#include <windows.h>
+#include <GL/glew.h>
+#include <GL/freeglut.h>
 #include <math.h>
 #include <string.h>
 #include "surfaceModeller.h"
@@ -77,6 +71,12 @@ int main(int argc, char* argv[])
 	init3DSurfaceWindow();
 
 	// Annnd... ACTION!!
+	//GLEW Call
+	GLenum res = glewInit();
+	if (res != GLEW_OK) {
+		fprintf(stderr, "Error: '%s'\n", glewGetErrorString(res));
+		return 1;
+	}
 	glutMainLoop(); 
 
 	return 0;
@@ -857,10 +857,8 @@ void computeVertexNormals()
 }
 
 static void createVBO(){
-//    float vertices[4];
     vertices = (float *)malloc(sizeof(float) * subcurve.numCurvePoints * NUMBEROFSIDES * 3);
 
-//    float normals[4];
     normals = (float *)malloc(sizeof(float) * subcurve.numCurvePoints * NUMBEROFSIDES * 3);
 
     for (int row = 0; row < subcurve.numCurvePoints; row++)
@@ -869,13 +867,14 @@ static void createVBO(){
         {
             for (int i = 0; i < 3; i++)
             {
-                vertices[row*col + i] = subcurve.curvePoints[row].y;
-                vertices[row*col + i + 1] = varray[row*NUMBEROFSIDES + col].x;
-                vertices[row*col + i + 2] = varray[row*NUMBEROFSIDES + col].z;
 
-                normals[row*col + i] = varray[row*NUMBEROFSIDES + col].normal.x;
-                normals[row*col + i + 1] = varray[row*NUMBEROFSIDES + col].normal.y;
-                normals[row*col + i + 2] = varray[row*NUMBEROFSIDES + col].normal.z;
+				vertices[row*NUMBEROFSIDES + col + i] = varray[row*NUMBEROFSIDES + col].x;
+				vertices[row*NUMBEROFSIDES + col + i + 1] = varray[row*NUMBEROFSIDES + col].y;
+				vertices[row*NUMBEROFSIDES + col + i + 2] = varray[row*NUMBEROFSIDES + col].z;
+
+				normals[row*NUMBEROFSIDES + col + i] = varray[row*NUMBEROFSIDES + col].normal.x;
+				normals[row*NUMBEROFSIDES + col + i + 1] = varray[row*NUMBEROFSIDES + col].normal.y;
+				normals[row*NUMBEROFSIDES + col + i + 2] = varray[row*NUMBEROFSIDES + col].normal.z;
 
             }
         }
@@ -889,10 +888,10 @@ static void createVBO(){
         {
             for (int i = 0; i < 4; i++)
             {
-                indices[row*col + i] = qarray[row*NUMBEROFSIDES + col].vertexIndex[0] = row * NUMBEROFSIDES + col;
-                indices[row*col + i + 1] = qarray[row*NUMBEROFSIDES + col].vertexIndex[1] = (row+1) * NUMBEROFSIDES + col;
-                indices[row*col + i + 2] = qarray[row*NUMBEROFSIDES + col].vertexIndex[2] = (row+1) * NUMBEROFSIDES + col;
-                indices[row*col + i + 3] = qarray[row*NUMBEROFSIDES + col].vertexIndex[3] = (row+1) * NUMBEROFSIDES + col;
+                indices[row*NUMBEROFSIDES + col + i] = qarray[row*NUMBEROFSIDES + col].vertexIndex[0];
+                indices[row*NUMBEROFSIDES + col + i + 1] = qarray[row*NUMBEROFSIDES + col].vertexIndex[1];
+                indices[row*NUMBEROFSIDES + col + i + 2] = qarray[row*NUMBEROFSIDES + col].vertexIndex[2];
+                indices[row*NUMBEROFSIDES + col + i + 3] = qarray[row*NUMBEROFSIDES + col].vertexIndex[3];
             }
         }
     }
@@ -965,8 +964,7 @@ void drawQuads()
 
 	// Replace this code with VAO or VBO and drawElements()
 //	glPushMatrix();
-//	for (int row = 0; row < subcurve.numCurvePoints - 1; row++)
-//	{
+//	for (int row = 0; row < subcurve.numCurvePoints - 1; row++)	{
 //		for (int col = 0; col < NUMBEROFSIDES; col++)
 //		{
 //			glBegin(GL_QUADS);
