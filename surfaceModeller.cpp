@@ -861,37 +861,50 @@ static void createVBO(){
 
     normals = (float *)malloc(sizeof(float) * subcurve.numCurvePoints * NUMBEROFSIDES * 3);
 
+	int index = 0;
     for (int row = 0; row < subcurve.numCurvePoints; row++)
     {
         for (int col = 0; col < NUMBEROFSIDES; col++ )
         {
             for (int i = 0; i < 3; i++)
             {
+				if (i == 0) {
+					vertices[index] = varray[row*NUMBEROFSIDES + col].x;
+					normals[index] = varray[row*NUMBEROFSIDES + col].normal.x;
+				}
+				else if (i == 1) {
+					vertices[index] = varray[row*NUMBEROFSIDES + col].y;
+					normals[index] = varray[row*NUMBEROFSIDES + col].normal.y;
+				}
+				else {
+					vertices[index] = varray[row*NUMBEROFSIDES + col].z;
+					normals[index] = varray[row*NUMBEROFSIDES + col].normal.y;
+				}
 
-				vertices[row*NUMBEROFSIDES + col + i] = varray[row*NUMBEROFSIDES + col].x;
-				vertices[row*NUMBEROFSIDES + col + i + 1] = varray[row*NUMBEROFSIDES + col].y;
-				vertices[row*NUMBEROFSIDES + col + i + 2] = varray[row*NUMBEROFSIDES + col].z;
-
-				normals[row*NUMBEROFSIDES + col + i] = varray[row*NUMBEROFSIDES + col].normal.x;
-				normals[row*NUMBEROFSIDES + col + i + 1] = varray[row*NUMBEROFSIDES + col].normal.y;
-				normals[row*NUMBEROFSIDES + col + i + 2] = varray[row*NUMBEROFSIDES + col].normal.z;
-
+				index += 1;
             }
         }
     }
 
     indices = (unsigned int *)malloc(sizeof(unsigned int) * (subcurve.numCurvePoints * NUMBEROFSIDES * 4));
 
+	index = 0;
     for (int row = 0; row < subcurve.numCurvePoints - 1; row++)
     {
         for (int col = 0; col < NUMBEROFSIDES; col++)
         {
             for (int i = 0; i < 4; i++)
             {
-                indices[row*NUMBEROFSIDES + col + i] = qarray[row*NUMBEROFSIDES + col].vertexIndex[0];
-                indices[row*NUMBEROFSIDES + col + i + 1] = qarray[row*NUMBEROFSIDES + col].vertexIndex[1];
-                indices[row*NUMBEROFSIDES + col + i + 2] = qarray[row*NUMBEROFSIDES + col].vertexIndex[2];
-                indices[row*NUMBEROFSIDES + col + i + 3] = qarray[row*NUMBEROFSIDES + col].vertexIndex[3];
+				if (i == 0)
+					indices[index] = qarray[row*NUMBEROFSIDES + col].vertexIndex[0];
+				else if (i == 1)
+					indices[index] = qarray[row*NUMBEROFSIDES + col].vertexIndex[1];
+				else if (i == 2)
+					indices[index] = qarray[row*NUMBEROFSIDES + col].vertexIndex[2];
+				else
+					indices[index] = qarray[row*NUMBEROFSIDES + col].vertexIndex[3];
+
+				index += 1;
             }
         }
     }
@@ -927,10 +940,10 @@ static void createVBO(){
     // enable vertex arrays
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_NORMAL_ARRAY);
-//    glEnableClientState(GL_COLOR_ARRAY);
+    //glEnableClientState(GL_COLOR_ARRAY);
 
-    size_t nOffset = vSize;
-    size_t cOffset = nOffset + nSize;
+    size_t nOffset = sizeof (vertices);
+    //size_t cOffset = nOffset + sizeof(normals);
 
     // specify vertex arrays with their offsets
     glVertexPointer(3, GL_FLOAT, 0, (void*)0);
@@ -963,21 +976,21 @@ void drawQuads()
     glPopMatrix();
 
 	// Replace this code with VAO or VBO and drawElements()
-//	glPushMatrix();
-//	for (int row = 0; row < subcurve.numCurvePoints - 1; row++)	{
-//		for (int col = 0; col < NUMBEROFSIDES; col++)
-//		{
-//			glBegin(GL_QUADS);
-//			for (int i = 0; i < 4; i++)
-//			{
-//				Vertex *vertex = &varray[qarray[row*NUMBEROFSIDES + col].vertexIndex[i]];
-//				glNormal3f(vertex->normal.x, vertex->normal.y, vertex->normal.z);
-//				glVertex3f(vertex->x, vertex->y, vertex->z);
-//			}
-//			glEnd();
-//		}
-//	}
-//	glPopMatrix();
+	/*glPushMatrix();
+	for (int row = 0; row < subcurve.numCurvePoints - 1; row++)	{
+		for (int col = 0; col < NUMBEROFSIDES; col++)
+		{
+			glBegin(GL_QUADS);
+			for (int i = 0; i < 4; i++)
+			{
+				Vertex *vertex = &varray[qarray[row*NUMBEROFSIDES + col].vertexIndex[i]];
+				glNormal3f(vertex->normal.x, vertex->normal.y, vertex->normal.z);
+				glVertex3f(vertex->x, vertex->y, vertex->z);
+			}
+			glEnd();
+		}
+	}
+	glPopMatrix();*/
 }
 
 void drawQuadsAsPoints()
@@ -1032,7 +1045,7 @@ void drawQuadsAsLines()
                 for (int i = 0; i < 4; i++)
                 {
                     Vertex *vertex = &varray[qarray[row*NUMBEROFSIDES + col].vertexIndex[i]];
-                    glVertex3f(vertex->normal.x, vertex->normal.y, vertex->normal.z);
+                    glVertex3f(vertex->normal.x + vertex->x, vertex->normal.y + vertex->y, vertex->normal.z + vertex->z);
                     glVertex3f(vertex->x, vertex->y, vertex->z);
                 }
                 glEnd();
