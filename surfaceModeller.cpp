@@ -596,6 +596,8 @@ GLboolean drawNormals = false;
 GLdouble eyeX = 0.0, eyeY = 3.0, eyeZ = 10.0;
 GLdouble radius = eyeZ;
 GLdouble zNear = 0.1, zFar = 40.0;
+int yaw = 0;
+int pitch = 0;
 
 void init3DSurfaceWindow()
 {
@@ -971,12 +973,12 @@ void drawQuads()
 	glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, quadMat_diffuse);
 	glMaterialfv(GL_FRONT_AND_BACK, GL_SHININESS, quadMat_shininess);
     
-    glPushMatrix();
+    /*glPushMatrix();
     createVBO();
-    glPopMatrix();
+    glPopMatrix();*/
 
-	// Replace this code with VAO or VBO and drawElements()
-	/*glPushMatrix();
+	 //Replace this code with VAO or VBO and drawElements()
+	glPushMatrix();
 	for (int row = 0; row < subcurve.numCurvePoints - 1; row++)	{
 		for (int col = 0; col < NUMBEROFSIDES; col++)
 		{
@@ -990,7 +992,7 @@ void drawQuads()
 			glEnd();
 		}
 	}
-	glPopMatrix();*/
+	glPopMatrix();
 }
 
 void drawQuadsAsPoints()
@@ -1119,48 +1121,41 @@ void mouseScrollWheelHandler3D(int button, int dir, int xMouse, int yMouse)
 
 void mouseMotionHandler3D(int x, int y)
 {
+
 	int dx = x - lastMouseX;
 	int dy = y - lastMouseY;
+
+	const float sensitivity = 0.2f;
+	dx *= sensitivity;
+	dy *= sensitivity;
+
+	
 	if (currentButton == GLUT_LEFT_BUTTON)
 	{
       // Fill in this code to control camera "orbiting" around surface
-//        glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-//        glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-//        glm::vec3 cameraDirection = glm::normalize(cameraPos - cameraTarget);
-//        glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-//        glm::vec3 cameraRight = glm::normalize(glm::cross(up, cameraDirection));
-//        glm::vec3 cameraUp = glm::cross(cameraDirection, cameraRight);
-//        glm::mat4 view;
-//        view = glm::lookAt(glm::vec3(0.0f, 0.0f, 3.0f),
-//                     glm::vec3(0.0f, 0.0f, 0.0f),
-//                     glm::vec3(0.0f, 1.0f, 0.0f));
-//
-//        float sensitivity = 0.1f;
-//        dx *= sensitivity;
-//        dy *= sensitivity;
-//
-//        int yaw   += xoffset;
-//        int pitch += yoffset;
-//
-//        if(pitch > 89.0f)
-//            pitch = 89.0f;
-//        if(pitch < -89.0f)
-//            pitch = -89.0f;
-//
-//        glm::vec3 direction;
-//        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-//        direction.y = sin(glm::radians(pitch));
-//        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-//        cameraFront = glm::normalize(direction);
+
+		yaw += dx;
+
 	}
 	if (currentButton == GLUT_RIGHT_BUTTON) 
 	{
       // Fill in this code to control camera elevation. Limit the elevation angle
+		pitch += dy;
+		if (pitch > 89.0f)
+			pitch = 89.0f;
+		if (pitch < -89.0f)
+			pitch = -89.0f;
 	}
 	else if (currentButton == GLUT_MIDDLE_BUTTON) 
 	{
 		// Fill in this code for zooming or ignore and use the scroll wheel
 	}
+	eyeX = cos(yaw) * cos(pitch) * radius;
+	eyeY = sin(pitch) * radius;
+	eyeZ = sin(yaw) * cos(pitch) * radius;
+
+	gluLookAt(eyeX, eyeY, eyeZ, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
 	lastMouseX = x;
 	lastMouseY = y;
 	glutPostRedisplay();
