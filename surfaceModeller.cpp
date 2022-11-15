@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	glutMouseFunc(mouseButtonHandler2D);
 	glutMotionFunc(mouseMotionHandler2D);
 	glutPassiveMotionFunc(mouseHoverHandler2D);
-//	glutMouseWheelFunc(mouseScrollWheelHandler2D);
+	glutMouseWheelFunc(mouseScrollWheelHandler2D);
 	glutSpecialFunc(specialKeyHandler2D);
 	glutKeyboardFunc(keyboardHandler2D);
 	
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(display3D);
 	glutReshapeFunc(reshape3D);
 	glutMouseFunc(mouseButtonHandler3D);
-//	glutMouseWheelFunc(mouseScrollWheelHandler3D);
+	glutMouseWheelFunc(mouseScrollWheelHandler3D);
 	glutMotionFunc(mouseMotionHandler3D);
 	glutKeyboardFunc(keyboardHandler3D);
 	// Initialize the 3D system
@@ -356,67 +356,67 @@ void mouseHoverHandler2D(int xMouse, int yMouse)
 	glutPostRedisplay();
 }
 
-//void mouseScrollWheelHandler2D(int button, int dir, int xMouse, int yMouse)
-//{
-//	GLdouble worldViewableWidth;
-//	GLdouble worldViewableHeight;
-//	GLdouble cameraOnCenterX;
-//	GLdouble cameraOnCenterY;
-//	GLdouble anchorPointX, anchorPointY;
-//	double clipWindowWidth;
-//	double clipWindowHeight;
-//	double wvCenterX = wvLeft   + (wvRight - wvLeft)/2.0;
-//	double wvCenterY = wvBottom + (wvTop   - wvBottom)/2.0;
-//	double wvWidth   = wvRight - wvLeft;
-//	double wvHeight  = wvTop   - wvBottom;
-//
-//	worldToCameraCoordiantes(worldCenterX, worldCenterY, &cameraOnCenterX, &cameraOnCenterY);
-//	if (wvWidth >= (worldRight-worldLeft)*1.2)
-//	{
-//		anchorPointX = cameraOnCenterX;
-//		anchorPointY = cameraOnCenterY;
-//	} else
-//	{
-//		// else, anchor the zoom to the mouse
-//		screenToWorldCoordinates(xMouse, yMouse, &anchorPointX, &anchorPointY);
-//	}
-//	GLdouble anchorToCenterX = anchorPointX - wvCenterX;
-//	GLdouble anchorToCenterY = anchorPointY - wvCenterY;
-//
-//	// Set up maximum shift
-//	GLdouble maxPosShift = 50;
-//	GLdouble maxNegShift = -50;
-//	anchorToCenterX = (anchorToCenterX > maxPosShift)? maxPosShift : anchorToCenterX;
-//	anchorToCenterX = (anchorToCenterX < maxNegShift)? maxNegShift : anchorToCenterX;
-//	anchorToCenterY = (anchorToCenterY > maxPosShift)? maxPosShift : anchorToCenterY;
-//	anchorToCenterY = (anchorToCenterY < maxNegShift)? maxNegShift : anchorToCenterY;
-//
-//	// Move the world centre closer to this point.
-//	wvCenterX += anchorToCenterX/4;
-//	wvCenterY += anchorToCenterY/4;
-//
-//	if (dir > 0)
-//	{
-//		// Zoom in to mouse point
-//		clipWindowWidth = wvWidth*0.8;
-//		clipWindowHeight= wvHeight*0.8;
-//		wvRight =  wvCenterX + clipWindowWidth/2.0;
-//		wvTop   =  wvCenterY + clipWindowHeight/2.0;
-//		wvLeft  =  wvCenterX - clipWindowWidth/2.0;
-//		wvBottom=  wvCenterY - clipWindowHeight/2.0;
-//	}
-//	else
-//	{
-//		// Zoom out
-//		clipWindowWidth = wvWidth*1.25;
-//		clipWindowHeight= wvHeight*1.25;
-//		wvRight =  wvCenterX + clipWindowWidth/2.0;
-//		wvTop   =  wvCenterY + clipWindowHeight/2.0;
-//		wvLeft  =  wvCenterX - clipWindowWidth/2.0;
-//		wvBottom=  wvCenterY - clipWindowHeight/2.0;
-//	}
-//	glutPostRedisplay();
-//}
+void mouseScrollWheelHandler2D(int button, int dir, int xMouse, int yMouse)
+{
+	GLdouble worldViewableWidth;
+	GLdouble worldViewableHeight;
+	GLdouble cameraOnCenterX;
+	GLdouble cameraOnCenterY;
+	GLdouble anchorPointX, anchorPointY;
+	double clipWindowWidth;
+	double clipWindowHeight;
+	double wvCenterX = wvLeft   + (wvRight - wvLeft)/2.0;
+	double wvCenterY = wvBottom + (wvTop   - wvBottom)/2.0;
+	double wvWidth   = wvRight - wvLeft;
+	double wvHeight  = wvTop   - wvBottom;
+
+	worldToCameraCoordiantes(worldCenterX, worldCenterY, &cameraOnCenterX, &cameraOnCenterY);
+	if (wvWidth >= (worldRight-worldLeft)*1.2)
+	{
+		anchorPointX = cameraOnCenterX;
+		anchorPointY = cameraOnCenterY;
+	} else
+	{
+		// else, anchor the zoom to the mouse
+		screenToWorldCoordinates(xMouse, yMouse, &anchorPointX, &anchorPointY);
+	}
+	GLdouble anchorToCenterX = anchorPointX - wvCenterX;
+	GLdouble anchorToCenterY = anchorPointY - wvCenterY;
+
+	// Set up maximum shift
+	GLdouble maxPosShift = 50;
+	GLdouble maxNegShift = -50;
+	anchorToCenterX = (anchorToCenterX > maxPosShift)? maxPosShift : anchorToCenterX;
+	anchorToCenterX = (anchorToCenterX < maxNegShift)? maxNegShift : anchorToCenterX;
+	anchorToCenterY = (anchorToCenterY > maxPosShift)? maxPosShift : anchorToCenterY;
+	anchorToCenterY = (anchorToCenterY < maxNegShift)? maxNegShift : anchorToCenterY;
+
+	// Move the world centre closer to this point.
+	wvCenterX += anchorToCenterX/4;
+	wvCenterY += anchorToCenterY/4;
+
+	if (dir > 0)
+	{
+		// Zoom in to mouse point
+		clipWindowWidth = wvWidth*0.8;
+		clipWindowHeight= wvHeight*0.8;
+		wvRight =  wvCenterX + clipWindowWidth/2.0;
+		wvTop   =  wvCenterY + clipWindowHeight/2.0;
+		wvLeft  =  wvCenterX - clipWindowWidth/2.0;
+		wvBottom=  wvCenterY - clipWindowHeight/2.0;
+	}
+	else
+	{
+		// Zoom out
+		clipWindowWidth = wvWidth*1.25;
+		clipWindowHeight= wvHeight*1.25;
+		wvRight =  wvCenterX + clipWindowWidth/2.0;
+		wvTop   =  wvCenterY + clipWindowHeight/2.0;
+		wvLeft  =  wvCenterX - clipWindowWidth/2.0;
+		wvBottom=  wvCenterY - clipWindowHeight/2.0;
+	}
+	glutPostRedisplay();
+}
 
 void keyboardHandler2D(unsigned char key, int x, int y)
 {
@@ -598,6 +598,7 @@ GLdouble radius = eyeZ;
 GLdouble zNear = 0.1, zFar = 40.0;
 int yaw = 0;
 int pitch = 0;
+GLdouble zoom = 0.0f;
 
 void init3DSurfaceWindow()
 {
@@ -649,7 +650,10 @@ void reshape3D(int w, int h)
 void display3D()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	gluPerspective(fov, aspect, zNear, zFar);
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	// Set up the Viewing Transformation (V matrix)	
 	gluLookAt(eyeX, eyeY, eyeZ, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
@@ -1117,6 +1121,15 @@ void mouseScrollWheelHandler3D(int button, int dir, int xMouse, int yMouse)
 {
 	// Fill in this code for zooming in and out
 
+	if (dir > 0)
+	{
+		fov += yMouse;
+	}
+	else
+	{
+		fov -= yMouse;
+	}
+	glutPostRedisplay();
 }
 
 void mouseMotionHandler3D(int x, int y)
@@ -1141,10 +1154,10 @@ void mouseMotionHandler3D(int x, int y)
 	{
       // Fill in this code to control camera elevation. Limit the elevation angle
 		pitch += dy;
-		if (pitch > 89.0f)
-			pitch = 89.0f;
-		if (pitch < -89.0f)
-			pitch = -89.0f;
+		if (pitch > 60)
+			pitch = 60;
+		if (pitch < -60)
+			pitch = -60;
 	}
 	else if (currentButton == GLUT_MIDDLE_BUTTON) 
 	{
